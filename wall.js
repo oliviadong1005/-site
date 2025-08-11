@@ -1,28 +1,59 @@
-const form   = document.getElementById('msgForm');
-const wall   = document.getElementById('wall');
-const LS_KEY = 'zpl_wall';
+// wall.js  基于 GitHub Issues 的留言墙
+const OWNER = 'zplapi';           // 改成你的用户名
+const REPO  = 'zplapi-site';      // 改成你的仓库名
+const ISSUES_URL = `https://api.github.com/repos/${OWNER}/${REPO}/issues`;
 
-function render(){
-  const data = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+const wall   = document.getElementById('wall');
+const form   = document.getElementById('msgForm');
+
+/* 读取留言 */
+async function loadIssues(){
+  const res  = await fetch(`${ISSUES_URL}?state=open&labels=wall`);
+  const list = await res.json();
   wall.innerHTML = '';
-  data.forEach(item=>{
+  list.forEach(iss=>{
     const card = document.createElement('div');
     card.className = 'card';
-    card.innerHTML = `<b>${item.nick}</b>：${item.text}`;
+    card.innerHTML = `
+      <b>${iss.user.login}</b>：
+      ${iss.body.replace(/\r\n/g,'<br>')}
+      <div style="font-size:0.8em;color:#888">
+        ${new Date(iss.created_at).toLocaleString()}
+      </div>
+    `;
     wall.appendChild(card);
   });
 }
 
-form.addEventListener('submit',e=>{
+/* 发表留言 */
+form.addEventListener('submit', async e=>{
   e.preventDefault();
   const nick = nickname.value.trim();
   const text = content.value.trim();
-  if(!nick || !text) return;
-  const data = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
-  data.unshift({nick,text});          // 已去掉 replies 字段
-  localStorage.setItem(LS_KEY,JSON.stringify(data));
-  form.reset();
-  render();
+  if(!nick || !text) return alert('内容不能为空');
+
+  // 弹出 OAuth 授权登录
+  const title = `留言：${nick}`;
+  const body  = text;
+  const res = await fetch(ISSUES_URL, {
+    method : 'POST',
+    headers: {
+      'Accept': 'application/vnd.github+json',
+      'Authorization': `token ${prompt('请输入你的 GitHub Personal Access Token')} `
+    },
+    body: JSON.stringify({
+      title,
+      body,
+      labels: ['wall']
+    })
+  });
+
+  if(res.ok){
+    form.reset();
+    await loadIssues();
+  }else{
+    alert('提交失败：' + res.status);
+  }
 });
 
-render();   // 首次加载
+loadIssues();
