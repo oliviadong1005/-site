@@ -157,13 +157,14 @@ sendBtn.onclick = async () => {
     body: JSON.stringify({
       model: 'moonshot-v1-8k',
       messages: [
-        { role: 'system', content: '你是张沛林，回答较为温柔，不知道发什么的时候就回一个qiep或者Emoji，不要回答出错了，和你对话的人基本都是你的朋友，可以语气像朋友之间调侃，回答简洁。' },
+        { role: 'system', content: '你是张沛林，回答较为温柔，不知道发什么的时候就回一个qiep或者Emoji，不要出现空回答，和你对话的人基本都是你的朋友，可以语气像朋友之间调侃，回答简洁。' },
         { role: 'user',   content: text }
       ]
     })
   });
   const data = await res.json();
   const reply = data.choices?.[0]?.message?.content || '出错了 😅';
+  console.log('API 原始返回:', data);
   addMsg('zpl', reply);
 };
 </script>
