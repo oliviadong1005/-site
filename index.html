@@ -121,22 +121,25 @@
   })();
 </script>
 <!-- 聊天框 -->
-<div id="chat">
-  <div id="messages"></div>
-  <input id="input" placeholder="和张沛林聊聊..." />
-  <button id="sendBtn">发送</button>
+<!-- zpl 聊天区 -->
+<div id="chat" style="margin-top:40px;max-width:600px;">
+  <div id="messages" style="border:1px solid #ccc;height:200px;overflow-y:auto;padding:6px;"></div>
+  <input id="input" placeholder="和张沛林聊聊…" style="width:70%;padding:4px;">
+  <button id="sendBtn" style="width:25%;">发送</button>
 </div>
 
 <script>
 const API_KEY = 'sk-9OTVzZThhOSJdwmtA5nogwI7PFQlUgxuPAGDnM1rGixmdEvm';
+
 const messagesEl = document.getElementById('messages');
 const inputEl    = document.getElementById('input');
 const sendBtn    = document.getElementById('sendBtn');
 
 const addMsg = (who, text) => {
   const div = document.createElement('div');
-  div.textContent = who + ': ' + text;
+  div.textContent = `${who}: ${text}`;
   messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
 };
 
 sendBtn.onclick = async () => {
@@ -153,15 +156,17 @@ sendBtn.onclick = async () => {
     },
     body: JSON.stringify({
       model: 'moonshot-v1-8k',
-      messages: [{ role: 'user', content: text }]
+      messages: [
+        { role: 'system', content: '你是张沛林，回答较为温柔，不知道发什么的时候就回一个qiep或者Emoji，回答简洁。' },
+        { role: 'user',   content: text }
+      ]
     })
   });
   const data = await res.json();
-  const reply = data.choices?.[0]?.message?.content || '出错了';
+  const reply = data.choices?.[0]?.message?.content || '出错了 😅';
   addMsg('zpl', reply);
 };
 </script>
-
 
 </body>
 </html>
