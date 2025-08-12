@@ -2,59 +2,94 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- 让手机浏览器按真实像素渲染，允许横竖屏切换 -->
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes" />
   <title>张沛林 — 主页</title>
+
+  <!-- 统一暗色极简风格 + 响应式 -->
   <style>
-    body{
-      font-family: "Noto Sans SC","Microsoft YaHei",sans-serif;
-      background:#0f1724; color:#e6f0f2;
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      height:100vh; margin:0;
+    /* 全局样式 */
+    html,body{
+      margin:0;
+      padding:0;
+      font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;
+      background:#0f1724;
+      color:#e6f0f2;
+      min-height:100vh;
     }
-    h1{margin-bottom:30px;}
-    a{
-      display:block; padding:14px 20px; background:#1e293b;
-      color:#6ee7b7; text-decoration:none; border-radius:8px;
-      margin:10px 0; font-size:18px;
+
+    /* 居中容器，移动端也友好 */
+    .wrapper{
+      max-width:680px;
+      margin:0 auto;
+      padding:2rem 1rem;
+      box-sizing:border-box;
     }
-    a:hover{background:#334155;}
+
+    h1{margin:.2em 0 .6em;font-size:1.8rem;}
+
+    /* 头像 */
+    .avatar{
+      max-width:180px;
+      border-radius:12px;
+      margin:16px 0;
+    }
+
+    /* 按钮链接 */
+    .btn{
+      display:block;
+      padding:14px 20px;
+      background:#1e293b;
+      color:#6ee7b7;
+      text-decoration:none;
+      border-radius:8px;
+      margin:10px 0;
+      font-size:1rem;
+      text-align:center;
+      transition:.2s;
+    }
+    .btn:hover{background:#334155;}
+
+    /* Cbox 区域 */
+    #cbox-wrapper{
+      width:100%;
+      margin-top:2rem;
+    }
+    #cbox-iframe{
+      width:100%;
+      height:60vh;          /* 手机竖屏占 60% 视口高度 */
+      border:1px solid #334155;
+      border-radius:8px;
+      background:#fff;      /* Cbox 本身白底，避免黑框 */
+    }
+
+    /* 电脑端加大高度 */
+    @media (min-width:768px){
+      #cbox-iframe{height:480px;}
+    }
   </style>
 </head>
+
 <body>
-  <h1>张沛林 — 导航</h1>
-  <h1>张沛林</h1>
-  <img src="avatar.jpg" alt="张沛林头像" style="max-width:240px;border-radius:12px;margin:16px 0;">
+  <div class="wrapper">
+    <h1>张沛林 — 主页</h1>
 
-  <p>张沛林是一款人工智能助手。</p>
+    <img class="avatar" src="avatar.jpg" alt="张沛林头像">
 
-  <a href="zhangpeilin.html">张沛林</a>
-  <a href="huoqu.html">如何获取软件</a>
-  <!-- ===== Cbox 聊天室开始 ===== -->
-<style>
-  /* 让聊天区域在手机上也基本可用 */
-  #cbox-container {
-    max-width: 100%;
-    margin: 20px 0;
-  }
-  #cbox-iframe {
-    width: 100%;
-    height: 400px;          /* 需要多高自己改 */
-    border: 1px solid #ddd;
-    border-radius: 6px;
-  }
-</style>
+    <p>张沛林是一款人工智能助手。</p>
 
-<div id="cbox-container">
-  <iframe
-    id="cbox-iframe"
-    src="https://www3.cbox.ws/box/?boxid=3548406&boxtag=YWZJ56"
-    allowtransparency="yes"
-    allow="autoplay"
-    frameborder="0"
-    scrolling="auto">
-  </iframe>
-</div>
-<!-- ===== Cbox 聊天室结束 ===== -->
-l
+    <a class="btn" href="zhangpeilin.html">张沛林</a>
+    <a class="btn" href="huoqu.html">如何获取软件</a>
+
+    <!-- ===== Cbox 聊天室 ===== -->
+    <div id="cbox-wrapper">
+      <iframe id="cbox-iframe"
+              src="https://www3.cbox.ws/box/?boxid=3548406&boxtag=YWZJ56"
+              allowtransparency="yes"
+              frameborder="0"
+              scrolling="auto">
+      </iframe>
+    </div>
+  </div>
 </body>
 </html>
