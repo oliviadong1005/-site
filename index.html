@@ -120,6 +120,48 @@
     });
   })();
 </script>
+<!-- 聊天框 -->
+<div id="chat">
+  <div id="messages"></div>
+  <input id="input" placeholder="和张沛林聊聊..." />
+  <button id="sendBtn">发送</button>
+</div>
+
+<script>
+const API_KEY = 'sk-9OTVzZThhOSJdwmtA5nogwI7PFQlUgxuPAGDnM1rGixmdEvm';
+const messagesEl = document.getElementById('messages');
+const inputEl    = document.getElementById('input');
+const sendBtn    = document.getElementById('sendBtn');
+
+const addMsg = (who, text) => {
+  const div = document.createElement('div');
+  div.textContent = who + ': ' + text;
+  messagesEl.appendChild(div);
+};
+
+sendBtn.onclick = async () => {
+  const text = inputEl.value.trim();
+  if (!text) return;
+  addMsg('你', text);
+  inputEl.value = '';
+
+  const res = await fetch('https://api.moonshot.cn/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${API_KEY}`
+    },
+    body: JSON.stringify({
+      model: 'moonshot-v1-8k',
+      messages: [{ role: 'user', content: text }]
+    })
+  });
+  const data = await res.json();
+  const reply = data.choices?.[0]?.message?.content || '出错了';
+  addMsg('zpl', reply);
+};
+</script>
+
 
 </body>
 </html>
