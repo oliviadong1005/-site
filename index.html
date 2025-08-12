@@ -82,14 +82,26 @@
     <a class="btn" href="huoqu.html">如何获取软件</a>
 
     <!-- ===== Cbox 聊天室 ===== -->
-    <div id="cbox-wrapper">
-      <iframe id="cbox-iframe"
-              src="https://www3.cbox.ws/box/?boxid=3548406&boxtag=YWZJ56"
-              allowtransparency="yes"
-              frameborder="0"
-              scrolling="auto">
-      </iframe>
-    </div>
-  </div>
+<button id="openChat" class="btn">打开聊天室</button>
+<div id="cbox-wrapper" style="display:none">
+  <iframe id="cbox-iframe"
+          src="about:blank"
+          data-src="https://www3.cbox.ws/box/?boxid=3548406&boxtag=YWZJ56"
+          width="100%" height="480" frameborder="0" scrolling="auto">
+  </iframe>
+</div>
+
+<script>
+document.getElementById('openChat').onclick = function () {
+  const wrap = document.getElementById('cbox-wrapper');
+  const ifr = document.getElementById('cbox-iframe');
+  if (ifr.src === 'about:blank') {
+    ifr.src = ifr.dataset.src;   // 真正加载
+  }
+  wrap.style.display = 'block';
+  this.style.display = 'none';   // 隐藏按钮
+};
+</script>
+
 </body>
 </html>
