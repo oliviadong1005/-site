@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>张沛林 - 消消乐</title>
+<style>
+  body{margin:0;font-family:"Noto Sans SC",sans-serif;background:#0f1724;color:#e6f0f2;text-align:center}
+  h1{margin:.5em 0 .3em;font-size:1.6rem}
+  #gameBoard{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;max-width:420px;margin:0 auto;padding:0 10px}
+  .tile{aspect-ratio:1/1;border-radius:8px;cursor:pointer;background-size:cover;background-position:center}
+  .tile.selected{outline:3px solid #fff}
+  #score{margin:.8em;font-size:1.2rem}
+  .back{margin-top:1em;font-size:1rem;color:#6ee7b7;text-decoration:none}
+</style>
+</head>
+<body>
+  <h1>消消乐小游戏</h1>
+  <div id="score">得分：0</div>
+  <div id="gameBoard"></div>
+  <a class="back" href="./">← 返回主页</a>
+
+<script>
+/* ---------- 配置 ---------- */
+const ROW = 6, COL = 6;          // 棋盘大小
+const IMGS = 6;                  // 方块种类（0.jpg ~ 5.jpg）
+const MATCH = 3;                 // 连成 3 个即消除
+const folder = 'img/';           // 图片目录
+/* ---------- 逻辑 ---------- */
+let board = [], score = 0;
+const $ = s => document.querySelector(s);
+const boardEl = $('#gameBoard');
+const scoreEl = $('#score');
+
+function rand(){return Math.floor(Math.random()*IMGS);}
+function initBoard(){
+  board = Array.from({length:ROW},()=>Array.from({length:COL},rand));
+  board.forEach((r,i)=>r.forEach((v,j)=>{
+    const tile = document.createElement('div');
+    tile.className = 'tile';
+    tile.dataset.r = i;
+    tile.dataset.c = j;
+    tile.style.backgroundImage = `url(${folder}${v}.jpg)`;
+    tile.addEventListener('click', onClick);
+    boardEl.appendChild(tile);
+  }));
+}
+function draw(){
+  boardEl.querySelectorAll('.tile').forEach((el,i)=>{
+    const r = Math.floor(i/COL), c = i%COL;
+    el.style.backgroundImage = `url(${folder}${board[r][c]}.jpg)`;
+    el.classList.toggle('selected',false);
+  });
+}
+function checkMatch(){
+  let removed = false;
+  // 横向
+  for(let r=0;r<ROW;r++){
+    for(let c=0;c<=COL-MATCH;c++){
+      const v = board[r][c];
+      if(v===-1) continue;
+      let ok = true;
+      for(let k=1;k<MATCH;k++) if(board[r][c+k]!==v){ok=false;break;}
+      if(ok){ for(let k=0;k<MATCH;k++) board[r][c+k]=-1; removed=true; }
+    }
+  }
+  // 纵向
+  for(let c=0;c<COL;c++){
+    for(let r=0;r<=ROW-MATCH;r++){
+      const v = board[r][c];
+      if(v===-1) continue;
+      let ok = true;
+      for(let k=1;k<MATCH;k++) if(board[r+k][c]!==v){ok=false;break;}
+      if(ok){ for(let k=0;k<MATCH;k++) board[r+k][c]=-1; removed=true; }
+    }
+  }
+  if(removed){
+    score+=10; scoreEl.textContent='得分：'+score;
+    dropDown();
+    draw();
+    setTimeout(checkMatch,200); // 连锁
+  }
+}
+function dropDown(){
+  for(let c=0;c<COL;c++){
+    const col = [];
+    for(let r=ROW-1;r>=0;r--) if(board[r][c]!==-1) col.push(board[r][c]);
+    while(col.length<ROW) col.push(rand());
+    for(let r=0;r<ROW;r++) board[r][c]=col[ROW-1-r];
+  }
+}
+let sel=null;
+function onClick(e){
+  const tile=e.target, r=+tile.dataset.r, c=+tile.dataset.c;
+  if(sel){
+    const [sr,sc]=sel;
+    if((Math.abs(sr-r)+Math.abs(sc-c))===1){
+      [board[sr][sc],board[r][c]]=[board[r][c],board[sr][sc]];
+      draw();
+      sel=null;
+      setTimeout(checkMatch,50);
+    }else{ sel=[r,c]; draw(); tile.classList.add('selected'); }
+  }else{ sel=[r,c]; tile.classList.add('selected'); }
+}
+initBoard();
+checkMatch();
+</script>
+</body>
+</html>
